@@ -343,3 +343,17 @@ footer a:hover {
     padding: 20px 15px;
   }
 }
+
+// Add headers
+csvContent += "Stock Code,Description,Quantity,Unit Price\n";
+
+allExtractedData.forEach(item => {
+    const row = [
+        item.stockCode || '',  // Optional field
+        `"${(item.description || '').replace(/"/g, '""')}"`,  // Mandatory
+        item.quantity || '',  // Mandatory
+        item.unitPrice || ''  // Mandatory
+    ];
+    
+    csvContent += row.join(',') + '\n';
+});
