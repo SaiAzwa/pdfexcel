@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Configuration
-    const webhookUrl = CONFIG.MAKE_WEBHOOK_URL;
+    const webhookUrl = '/extract';
 
     // Elements
     const pdfForm = document.getElementById('pdf-form');
