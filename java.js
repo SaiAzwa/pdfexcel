@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Configuration
     const webhookUrl = CONFIG.MAKE_WEBHOOK_URL;
-    
+
     // Elements
     const pdfForm = document.getElementById('pdf-form');
     const pdfFileInput = document.getElementById('pdf-file');
@@ -18,12 +18,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const tryAgainBtn = document.getElementById('try-again');
     const processingStatus = document.getElementById('processing-status');
     const fileCount = document.getElementById('file-count');
-    
-    // Store extracted data
+
+    // Store extracted data and drag-drop files
     let allExtractedData = [];
+    let droppedFiles = null;
 
     // File selection event
     pdfFileInput.addEventListener('change', function() {
+        droppedFiles = null; // reset if user uses file picker
         if (this.files.length > 0) {
             selectedFileText.textContent = this.files.length === 1 ? this.files[0].name : `${this.files.length} files selected`;
             selectedFileText.style.color = '#4CAF50';
@@ -37,19 +39,19 @@ document.addEventListener('DOMContentLoaded', function() {
     pdfForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        if (!pdfFileInput.files.length) {
+        const filesToProcess = droppedFiles || pdfFileInput.files;
+
+        if (!filesToProcess.length) {
             alert('Please select at least one PDF file.');
             return;
         }
 
-        // Reset stored data
         allExtractedData = [];
 
-        // Show processing screen
         uploadSection.classList.add('hidden');
         processingSection.classList.remove('hidden');
 
-        processFiles(Array.from(pdfFileInput.files), 0);
+        processFiles(Array.from(filesToProcess), 0);
     });
 
     // Process files sequentially
@@ -70,16 +72,14 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.ok ? response.json() : Promise.reject('Network error'))
         .then(data => {
             if (data?.items?.length > 0) {
-                const validItems = data.items.filter(item => item.description && item.quantity && item.unitPrice); // Enforcing mandatory fields
-                
-                const itemsWithSource = validItems.map(item => ({ 
-                    ...item, 
-                    sourceFile: file.name 
+                const validItems = data.items.filter(item => item.description && item.quantity && item.unitPrice);
+                const itemsWithSource = validItems.map(item => ({
+                    ...item,
+                    sourceFile: file.name
                 }));
-
                 allExtractedData.push(...itemsWithSource);
             }
-            
+
             processFiles(files, index + 1);
         })
         .catch(error => {
@@ -130,6 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
     tryAgainBtn.addEventListener('click', function() {
         errorSection.classList.add('hidden');
         uploadSection.classList.remove('hidden');
+        droppedFiles = null;
     });
 
     // Handle "Convert More PDFs" button
@@ -138,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadSection.classList.remove('hidden');
         pdfFileInput.value = '';
         selectedFileText.textContent = 'No files selected';
+        droppedFiles = null;
     });
 
     // Drag and Drop
@@ -163,8 +165,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const files = dt.files;
 
         if (files.length) {
-            pdfFileInput.files = files;
-            pdfFileInput.dispatchEvent(new Event('change'));
+            droppedFiles = files;
+            selectedFileText.textContent = files.length === 1 ? files[0].name : `${files.length} files selected`;
+            selectedFileText.style.color = '#4CAF50';
         }
     });
 
@@ -179,9 +182,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         allExtractedData.forEach(item => {
             const row = [
-                item.stockCode || '-', 
-                `"${(item.description).replace(/"/g, '""')}"`, 
-                item.quantity, 
+                item.stockCode || '-',
+                `"${(item.description).replace(/"/g, '""')}"`,
+                item.quantity,
                 item.unitPrice
             ];
             csvContent += row.join(',') + '\n';
