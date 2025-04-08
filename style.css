@@ -69,6 +69,7 @@ header p {
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  background-color: white;
 }
 
 .dropzone:hover,
@@ -80,7 +81,7 @@ header p {
 .selected-file {
   margin-bottom: 25px;
   font-size: 15px;
-  color: var(--light-text);
+  color: var(--light-text); /* JS will override this on valid selection */
   transition: color 0.3s ease;
 }
 
@@ -95,6 +96,7 @@ header p {
   font-size: 16px;
   font-weight: 500;
   transition: all 0.3s ease;
+  margin: 10px 5px;
 }
 
 .button:hover {
@@ -177,9 +179,12 @@ header p {
 .file-header {
   grid-column: 1 / -1;
   background-color: var(--success-bg);
-  padding: 10px 12px;
-  font-weight: 600;
+  padding: 12px;
+  font-weight: 700;
+  font-size: 15px;
   color: var(--success-color);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 /* Error Section */
@@ -194,6 +199,11 @@ header p {
   font-weight: 600;
 }
 
+/* Utility: hidden */
+.hidden {
+  display: none !important;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .results-header,
@@ -201,20 +211,33 @@ header p {
     grid-template-columns: 1fr 1.5fr 0.7fr 0.7fr;
     font-size: 14px;
   }
-  
+
   .button {
     width: 100%;
+    margin: 10px 0;
   }
 }
 
 @media (max-width: 480px) {
   .results-header,
   .results-row {
-    grid-template-columns: 0.8fr 1.2fr 0.6fr 0.6fr;
+    grid-template-columns: 1fr 1.2fr 0.6fr 0.6fr;
     font-size: 13px;
   }
-  
+
+  .dropzone {
+    padding: 35px 15px;
+  }
+
   section {
-    padding: 20px 15px;
+    padding: 20px 10px;
+  }
+
+  header h1 {
+    font-size: 22px;
+  }
+
+  .file-header {
+    font-size: 14px;
   }
 }
