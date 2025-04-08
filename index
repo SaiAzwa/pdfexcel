@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Excel Converter</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PDF to Excel Converter</h1>
+            <p>Upload invoice PDFs to extract stock code, description, quantity, and unit price</p>
+        </header>
+
+        <main>
+            <!-- Upload Section -->
+            <section id="upload-section">
+                <div class="upload-container">
+                    <form id="pdf-form">
+                        <div class="dropzone" id="dropzone">
+                            <input type="file" id="pdf-file" name="pdfFile" accept=".pdf" multiple required>
+                            <div class="dropzone-text">
+                                <img src="img/pdf-icon.svg" alt="PDF" width="48" height="48">
+                                <p>Drop your PDFs here or click to browse (multiple files supported)</p>
+                            </div>
+                        </div>
+                        <div class="selected-file" id="selected-file">No files selected</div>
+                        <button type="submit" class="button" id="convert-button">Convert PDFs</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Processing Indicator -->
+            <section id="processing-section" class="hidden">
+                <div class="processing">
+                    <div class="spinner"></div>
+                    <p>Processing your PDF(s)...</p>
+                    <p id="processing-status">Preparing files...</p>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-section" class="hidden">
+                <h2>Extraction Results</h2>
+                <div class="file-summary" id="file-summary">
+                    Successfully processed <span id="file-count">0</span> files
+                </div>
+                <div class="results-container">
+                    <div class="results-header">
+                        <div>Stock Code</div>
+                        <div>Description</div>
+                        <div>Quantity</div>
+                        <div>Unit Price</div>
+                    </div>
+                    <div id="results-data"></div>
+                </div>
+                <div class="actions">
+                    <button id="download-excel" class="button secondary">Download Combined Excel</button>
+                    <button id="new-conversion" class="button">Convert More PDFs</button>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section id="error-section" class="hidden">
+                <div class="error-container">
+                    <h2>Processing Error</h2>
+                    <p id="error-message">Unable to process the PDF file.</p>
+                    <button id="try-again" class="button">Try Again</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>PDF to Excel Converter Tool - <a href="https://github.com/yourusername/pdf-converter">GitHub Repository</a></p>
+        </footer>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
