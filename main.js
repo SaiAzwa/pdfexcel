@@ -26,9 +26,15 @@ import {
     resetWorkbook 
 } from './excelExporter.js';
 
+import { 
+    batchTranslate, 
+    clearTranslationCache 
+} from './translator.js';
+
 // Application state
 let selectedFiles = [];
 let extractedData = [];
+let translationEnabled = false;
 
 // Initialize the application
 function init() {
@@ -53,20 +59,38 @@ function setupEventListeners() {
         downloadBtn.addEventListener('click', () => downloadExcel(extractedData, showStatusMessage));
     }
 
-    // Expose removeFile function globally for onclick handlers
-    window.removeFileHandler = removeFile;
+    const translationToggle = document.getElementById('translationToggle');
+    if (translationToggle) {
+        translationToggle.addEventListener('change', (e) => {
+            translationEnabled = e.target.checked;
+            if (translationEnabled) {
+                showStatusMessage('Translation enabled. Descriptions will be translated to Chinese.', 'success');
+            } else {
+                showStatusMessage('Translation disabled.', 'success');
+            }
+        });
+    }
+
+    // Note: removeFile is now handled via event listeners in ui.js, no global exposure needed
 }
 
 function handleFileSelection(event) {
+    console.log('File selection event triggered');
     const files = Array.from(event.target.files);
+    console.log('Selected files:', files);
     
     files.forEach(file => {
+        console.log('Processing file:', file.name, 'Type:', file.type);
         // Ensure the file is a PDF and not already in the list
         if (file.type === 'application/pdf' && !selectedFiles.some(f => f.name === file.name)) {
             selectedFiles.push(file);
+            console.log('File added to selectedFiles:', file.name);
+        } else {
+            console.log('File rejected - either not PDF or already exists:', file.name);
         }
     });
 
+    console.log('Total selected files:', selectedFiles.length);
     updateFileList(selectedFiles, removeFile);
     updateConvertButton(selectedFiles);
 }
@@ -105,6 +129,30 @@ async function convertFiles() {
     
     // Remove duplicates across all processed files to ensure unique items
     extractedData = removeDuplicates(extractedData);
+
+    // Translate descriptions if translation is enabled
+    if (translationEnabled && extractedData.length > 0) {
+        updateProgress(selectedFiles.length, selectedFiles.length + 1, 'Translating descriptions to Chinese...');
+        
+        try {
+            const descriptions = extractedData.map(item => item.description);
+            const translatedDescriptions = await batchTranslate(descriptions, 
+                (current, total, message) => {
+                    updateProgress(selectedFiles.length, selectedFiles.length + 1, message);
+                }
+            );
+            
+            // Update the extracted data with translated descriptions
+            extractedData.forEach((item, index) => {
+                item.description = translatedDescriptions[index];
+            });
+            
+            showStatusMessage('Descriptions translated to Chinese successfully!', 'success');
+        } catch (error) {
+            console.error('Translation error:', error);
+            showStatusMessage('Translation failed, proceeding with original text.', 'error');
+        }
+    }
 
     updateProgress(selectedFiles.length, selectedFiles.length, 'Creating Excel file...');
     
