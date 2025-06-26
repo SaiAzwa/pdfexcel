@@ -4,79 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF to Excel Converter</title>
+    <!-- External library for handling PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- External library for creating Excel files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Link to the external CSS file -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>PDF to Excel Converter</h1>
-            <p>Upload invoice PDFs to extract stock code, description, quantity, and unit price</p>
-        </header>
+        <div class="header">
+            <h1>📄 PDF to Excel Converter</h1>
+            <p>Extract stock information from English and Chinese PDFs</p>
+        </div>
 
-        <main>
-            <!-- Upload Section -->
-            <section id="upload-section">
-                <div class="upload-container">
-                    <form id="pdf-form">
-                        <div class="dropzone" id="dropzone">
-                            <input type="file" id="pdf-file" name="pdfFile" accept=".pdf" multiple required>
-                            <div class="dropzone-text">
-                                <img src="img/pdf-icon.svg" alt="PDF" width="48" height="48">
-                                <p>Drop your PDFs here or click to browse (multiple files supported)</p>
-                            </div>
-                        </div>
-                        <div class="selected-file" id="selected-file">No files selected</div>
-                        <button type="submit" class="button" id="convert-button">Convert PDFs</button>
-                    </form>
+        <div class="main-content">
+            <div class="upload-section">
+                <div class="upload-area">
+                    <div class="upload-icon">📁</div>
+                    <h3>Select PDF Files</h3>
+                    <p>Choose single or multiple PDF files to convert</p>
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        Choose Files
+                    </button>
+                    <input type="file" id="fileInput" class="file-input" multiple accept=".pdf">
                 </div>
-            </section>
+                <div class="file-list" id="fileList"></div>
+            </div>
 
-            <!-- Processing Indicator -->
-            <section id="processing-section" class="hidden">
-                <div class="processing">
-                    <div class="spinner"></div>
-                    <p>Processing your PDF(s)...</p>
-                    <p id="processing-status">Preparing files...</p>
-                </div>
-            </section>
+            <div class="convert-section">
+                <button class="convert-btn" id="convertBtn" onclick="convertFiles()" disabled>
+                    🔄 Convert to Excel
+                </button>
+            </div>
 
-            <!-- Results Section -->
-            <section id="results-section" class="hidden">
-                <h2>Extraction Results</h2>
-                <div class="file-summary" id="file-summary">
-                    Successfully processed <span id="file-count">0</span> files
+            <div class="progress-section" id="progressSection">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
                 </div>
-                <div class="results-container">
-                    <div class="results-header">
-                        <div>Stock Code</div>
-                        <div>Description</div>
-                        <div>Quantity</div>
-                        <div>Unit Price</div>
-                    </div>
-                    <div id="results-data"></div>
-                </div>
-                <div class="actions">
-                    <button id="download-excel" class="button secondary">Download Combined Excel</button>
-                    <button id="new-conversion" class="button">Convert More PDFs</button>
-                </div>
-            </section>
+                <div class="progress-text" id="progressText">Processing...</div>
+            </div>
 
-            <!-- Error Section -->
-            <section id="error-section" class="hidden">
-                <div class="error-container">
-                    <h2>Processing Error</h2>
-                    <p id="error-message">Unable to process the PDF file.</p>
-                    <button id="try-again" class="button">Try Again</button>
+            <div class="results-section" id="resultsSection">
+                <div class="results-header">
+                    <h3>✅ Conversion Complete</h3>
+                    <div id="statusContainer"></div>
+                    <button class="download-btn" id="downloadBtn" onclick="downloadExcel()">
+                        📥 Download Excel File
+                    </button>
                 </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>PDF to Excel Converter Tool - <a href="https://github.com/yourusername/pdf-converter">GitHub Repository</a></p>
-        </footer>
+                <div id="previewContainer"></div>
+            </div>
+        </div>
     </div>
 
-    <script src="js/config.js"></script>
-    <script src="js/script.js"></script>
+    <!-- Link to the external JavaScript file -->
+    <script src="script.js"></script>
 </body>
 </html>
